@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>外国人入境卡自助打印</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding: 20px;
+            /* 使用 flexbox 布局 */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #00008b;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        p {
+            font-size: 30px;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th {
+            padding: 10px 15px;
+            border: 0.5px solid #ccc;
+            width: 100px;
+        }
+
+        td {
+            padding: 10px 15px;
+            border: 0.5px solid #ccc;
+            width: 100px;
+        }
+
+        input {
+            width: 100%;
+            height: 35px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        /* 下拉列表的字体大小 */
+        select {
+            font-size: 18px;
+        }
+
+        /* 为第三行添加特殊样式 */
+        table tr:nth-child(3) th {
+            width: 250px;
+            /* 自定义宽度 */
+            /* background-color: lightblue; */
+        }
+
+        table tr:nth-child(3) td {
+            width: 250px;
+            /* 自定义宽度 */
+            /* background-color: lightyellow;  */
+        }
+
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 10px;
+            border-radius: 8px;
+        }
+
+        /* 最后一个 p 元素样式 */
+        body>p:last-of-type {
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            font-size: 16px;
+            margin-top: auto;
+            background-color: #f0f0f0;
+            padding: 10px 0;
+        }
+
+        /* 新增提示语样式 */
+        .translation-tip {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(to right, #4CAF50, #8BC34A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            font-size: 25px;
+        }
+
+        table tr:nth-last-child(-n+3) th,
+        table tr:nth-last-child(-n+3) td {
+            background-color: rgb(215, 229, 249);
+            /* 你可以根据需要修改颜色 */
+        }
+
+        #placeholder-image {
+            width: 50%;
+            height: auto;
+            /* background-color: white; */
+            margin: 0 auto;
+        }
+
+        /* 添加 logo 样式 */
+        #logo {
+            position: absolute;
+            top: 20px;
+            left: 50px;
+            width: 120px;
+            /* 可根据需要调整 logo 宽度 */
+            height: auto;
+        }
+    </style>
+    <script>
+        function logMessage(message) {
+            const now = new Date();
+            const timestamp = now.toISOString();
+            console.log(`${timestamp} - INFO - ${message}`);
+        }
+
+        // 翻译映射表
+        const translations = {
+            JPN: {
+                "证件号码": "証件番号",
+                "姓名": "名前",
+                "性别": "性別",
+                "国籍": "国籍",
+                "出生日期": "生年月日",
+                "中文姓名(请用中文填写)": "中国語名（中国語で記入してください）",
+                "签证号码": "ビザ番号",
+                "免签": "ビザ免除",
+                "抵达航班/车次/船名": "到着便番号/列車番号/船名",
+                "入境事由": "入国事由",
+                "本人电话号码": "本人の電話番号",
+                "在华经停和目的城市": "中国での経由地と目的の都市",
+                "在华住址或旅馆名称": "中国での住所またはホテル名",
+                "市": "市",
+                "确认打印": "印刷を確認",
+                "清空重采": "クリアして再取得",
+                "姓": "姓",
+                "名": "名",
+                "外交/公务": "外交・公務",
+                "商务": "商務",
+                "定居": "定住",
+                "就业": "就職",
+                "学习": "学習",
+                "旅游": "観光",
+                "探亲": "親族訪問",
+                "过境": "通過",
+                "其他": "その他"
+            },
+            KOR: {
+                "证件号码": "증명서 번호",
+                "姓名": "이름",
+                "性别": "성별",
+                "国籍": "국적",
+                "出生日期": "생년월일",
+                "中文姓名(请用中文填写)": "중국어 이름 (중국어로 작성하세요)",
+                "签证号码": "비자 번호",
+                "免签": "비자 면제",
+                "抵达航班/车次/船名": "도착 항공편/기차/선박 번호",
+                "入境事由": "입국 사유",
+                "本人电话号码": "본인 전화 번호",
+                "在华经停和目的城市": "중국에서의 경유 및 목적 도시",
+                "在华住址或旅馆名称": "중국에 머무르는 동안의 주소 또는 호텔 이름",
+                "市": "시",
+                "确认打印": "인쇄 확인",
+                "清空重采": "지우고 다시 가져오기",
+                "姓": "성",
+                "名": "이름",
+                "外交/公务": "외교/공무",
+                "商务": "상무",
+                "定居": "정착",
+                "就业": "취업",
+                "学习": "학습",
+                "旅游": "관광",
+                "探亲": "친척 방문",
+                "过境": "통과",
+                "其他": "기타"
+            },
+            VMN: {
+                "证件号码": "Số hiệu giấy tờ",
+                "姓名": "Tên",
+                "性别": "Giới tính",
+                "国籍": "Quốc tịch",
+                "出生日期": "Ngày sinh",
+                "中文姓名(请用中文填写)": "Tên tiếng Trung (viết bằng tiếng Trung)",
+                "签证号码": "Số visa",
+                "免签": "Miễn visa",
+                "抵达航班/车次/船名": "Số hiệu chuyến bay/ tàu/ thuyền đến",
+                "入境事由": "Mục đích nhập cảnh",
+                "本人电话号码": "Số điện thoại cá nhân",
+                "在华经停和目的城市": "Các thành phố trung gian và mục tiêu trong quá trình ở Trung Quốc",
+                "在华住址或旅馆名称": "Địa chỉ hoặc tên khách sạn trong thời gian ở Trung Quốc",
+                "市": "Thành phố",
+                "确认打印": "Xác nhận in",
+                "清空重采": "Xóa và lấy lại",
+                "姓": "Họ",
+                "名": "Tên",
+                "外交/公务": "Ngoại giao/Công vụ",
+                "商务": "Thương mại",
+                "定居": "Định cư",
+                "就业": "Tìm việc",
+                "学习": "Học tập",
+                "旅游": "Du lịch",
+                "探亲": "Thăm thân",
+                "过境": "Quá cảnh",
+                "其他": "Khác"
+            },
+            ALB: {
+                "证件号码": "Numri i dokumentit",
+                "姓名": "Emri",
+                "性别": "Gjinia",
+                "国籍": "Kombësia",
+                "出生日期": "Dita e lindjes",
+                "中文姓名(请用中文填写)": "Emri kinez (ju lutem plotësoni në kinezisht)",
+                "签证号码": "Numri i vizës",
+                "免签": "Pa vizë",
+                "抵达航班/车次/船名": "Numri i fluturimit/trenit/Emri i anijes të ardhjes",
+                "入境事由": "Arsyeja e hyrjes në vend",
+                "本人电话号码": "Numri i telefonit personal",
+                "在华经停和目的城市": "Qytetet e ndalesë dhe destinacionit në Kinë",
+                "在华住址或旅馆名称": "Adresa ose emri i hotelit në Kinë",
+                "市": "Qytet",
+                "确认打印": "Konfirmo printimin",
+                "清空重采": "Fshije dhe mblidhe përsëri",
+                "姓": "Mbiemri",
+                "名": "Emri",
+                "外交/公务": "Diplomaci/Zyrtarie",
+                "商务": "Biznes",
+                "定居": "Bazim",
+                "就业": "Punë",
+                "学习": "Studim",
+                "旅游": "Turizëm",
+                "探亲": "Vizitë familjare",
+                "过境": "Kalim",
+                "其他": "Tjetër"
+            },
+            OOO: {
+                "证件号码": "Document number",
+                "姓名": "Name",
+                "性别": "Gender",
+                "国籍": "Nationality",
+                "出生日期": "Date of birth",
+                "中文姓名(请用中文填写)": "Chinese name (please fill in in Chinese) ",
+                "签证号码": "Visa number",
+                "免签": "Visa-free",
+                "抵达航班/车次/船名": "Arrival Flight/train/ship name",
+                "入境事由": "Reasons for entry",
+                "本人电话号码": "Your telephone number",
+                "在华经停和目的城市": "Stopovers and destination cities in China",
+                "在华住址或旅馆名称": "Name of residence or hotel in China",
+                "市": "City",
+                "确认打印": "Make sure to print",
+                "清空重采": "Emptying and re-mining",
+                "姓": "Surname",
+                "名": "Given name",
+                "外交/公务": "Diplomacy/Official",
+                "商务": "Business",
+                "定居": "Settlement",
+                "就业": "Employment",
+                "学习": "Study",
+                "旅游": "Tourism",
+                "探亲": "Visiting Relatives",
+                "过境": "Transit",
+                "其他": "Others"
+            },
+            SAU: {
+                "证件号码": "رقم المستند",
+                "姓名": "الاسم",
+                "性别": "الجنس",
+                "国籍": "الجنسية",
+                "出生日期": "تاريخ الميلاد",
+                "中文姓名(请用中文填写)": "الاسم الصيني (يرجى ملئه باللغة الصينية)",
+                "签证号码": "رقم التأشيرة",
+                "免签": "مستثنى من التأشيرة",
+                "抵达航班/车次/船名": "رقم الرحلة/القطار/اسم السفينة الوافدة",
+                "入境事由": "سبب الدخول",
+                "本人电话号码": "رقم هاتفك الشخصي",
+                "在华经停和目的城市": "مدن التوقف والوجهة في الصين",
+                "在华住址或旅馆名称": "اسم السكن أو الفندق في الصين",
+                "市": "المدينة",
+                "确认打印": "تأكيد الطباعة",
+                "清空重采": "مسح واستلام جديد",
+                "姓": "اللقب",
+                "名": "الاسم الأول",
+                "外交/公务": "سفاراتي/مسؤول",
+                "商务": "تجارة",
+                "定居": "تثبيت",
+                "就业": "عمل",
+                "学习": "دراسة",
+                "旅游": "سياحة",
+                "探亲": "زيارة الأقارب",
+                "过境": "مرور",
+                "其他": "أخرى"
+            },
+            // 原有的翻译内容...
+            ARE: {
+                "证件号码": "رقم المستند",
+                "姓名": "الاسم",
+                "性别": "الجنس",
+                "国籍": "الجنسية",
+                "出生日期": "تاريخ الميلاد",
+                "中文姓名(请用中文填写)": "الاسم الصيني (يرجى ملئه باللغة الصينية)",
+                "签证号码": "رقم التأشيرة",
+                "免签": "مستثنى من التأشيرة",
+                "抵达航班/车次/船名": "رقم الرحلة/القطار/اسم السفينة الوافدة",
+                "入境事由": "سبب الدخول",
+                "本人电话号码": "رقم هاتفك الشخصي",
+                "在华经停和目的城市": "مدن التوقف والوجهة في الصين",
+                "在华住址或旅馆名称": "اسم السكن أو الفندق في الصين",
+                "市": "المدينة",
+                "确认打印": "تأكيد الطباعة",
+                "清空重采": "مسح واستلام جديد",
+                "姓": "اللقب",
+                "名": "الاسم الأول",
+                "外交/公务": "سفاراتي/مسؤول",
+                "商务": "تجارة",
+                "定居": "تثبيت",
+                "就业": "عمل",
+                "学习": "دراسة",
+                "旅游": "سياحة",
+                "探亲": "زيارة الأقارب",
+                "过境": "مرور",
+                "其他": "أخرى"
+            },
+            MYS: {
+                "证件号码": "Nombor dokumen",
+                "姓名": "Nama",
+                "性别": "Jantina",
+                "国籍": "Kewarganegaraan",
+                "出生日期": "Tarikh lahir",
+                "中文姓名(请用中文填写)": "Nama Cina (Sila isi dalam bahasa Cina)",
+                "签证号码": "Nombor visa",
+                "免签": "Tanpa visa",
+                "抵达航班/车次/船名": "Nama penerbangan/kereta api/perahu tiba",
+                "入境事由": "Sebab masuk negara",
+                "本人电话号码": "Nombor telefon peribadi",
+                "在华经停和目的城市": "Bandar perhentian dan tujuan di China",
+                "在华住址或旅馆名称": "Nama alamat atau hotel di China",
+                "市": "Bandar",
+                "确认打印": "Sahkan cetakan",
+                "清空重采": "Kosongkan dan ambil semula",
+                "姓": "Nama keluarga",
+                "名": "Nama depan",
+                "外交/公务": "Diplomatik/Rasmi",
+                "商务": "Perniagaan",
+                "定居": "Menduduk",
+                "就业": "Pekerjaan",
+                "学习": "Belajar",
+                "旅游": "Pelancongan",
+                "探亲": "Melawat saudara mara",
+                "过境": "Lintas negara",
+                "其他": "Lain-lain"
+            },
+            THA: {
+                "证件号码": "หมายเลขบัตรประชาชน",
+                "姓名": "ชื่อ",
+                "性别": "เพศ",
+                "国籍": "สัญชาติ",
+                "出生日期": "วันเกิด",
+                "中文姓名(请用中文填写)": "ชื่อภาษาจีน (กรุณากรอกด้วยภาษาจีน)",
+                "签证号码": "หมายเลขวีซ่า",
+                "免签": "ไม่ต้องมีวีซ่า",
+                "抵达航班/车次/船名": "ชื่อเที่ยวบิน/รถไฟ/เรือที่มาถึง",
+                "入境事由": "เหตุผลการเข้าประเทศ",
+                "本人电话号码": "หมายเลขโทรศัพท์ส่วนตัว",
+                "在华经停和目的城市": "เมืองระยะทางและเมืองปลายทางในประเทศจีน",
+                "在华住址或旅馆名称": "ชื่อที่อยู่หรือโรงแรมในประเทศจีน",
+                "市": "เมือง",
+                "确认打印": "ยืนยันการพิมพ์",
+                "清空重采": "ล้างข้อมูลและรับข้อมูลใหม่",
+                "姓": "นามสกุล",
+                "名": "ชื่อจริง",
+                "外交/公务": "การทูต/ราชการ",
+                "商务": "ธุรกิจ",
+                "定居": "ตั้งถิ่นฐาน",
+                "就业": "การจ้างงาน",
+                "学习": "การเรียน",
+                "旅游": "การท่องเที่ยว",
+                "探亲": "เยี่ยมญาติ",
+                "过境": "การผ่าน国境",
+                "其他": "อื่นๆ"
+            },
+            IDN: {
+                "证件号码": "Nomor dokumen",
+                "姓名": "Nama",
+                "性别": "Jenis kelamin",
+                "国籍": "Kewarganegaraan",
+                "出生日期": "Tanggal lahir",
+                "中文姓名(请用中文填写)": "Nama Cina (Silakan isi dengan bahasa Cina)",
+                "签证号码": "Nomor visa",
+                "免签": "Bebas visa",
+                "抵达航班/车次/船名": "Nama penerbangan/kereta api/kapal tiba",
+                "入境事由": "Alasan masuk negara",
+                "本人电话号码": "Nomor telepon pribadi",
+                "在华经停和目的城市": "Kota transit dan tujuan di China",
+                "在华住址或旅馆名称": "Nama alamat atau hotel di China",
+                "市": "Kota",
+                "确认打印": "Konfirmasi cetak",
+                "清空重采": "Kosongkan dan ambil ulang",
+                "姓": "Nama keluarga",
+                "名": "Nama depan",
+                "外交/公务": "Diplomatik/Pekerjaan resmi",
+                "商务": "Bisnis",
+                "定居": "Meninggalkan",
+                "就业": "Pekerjaan",
+                "学习": "Belajar",
+                "旅游": "Pariwisata",
+                "探亲": "Mengunjungi kerabat",
+                "过境": "Transit",
+                "其他": "Lainnya"
+            },
+            D: {
+                "证件号码": "Ausweisnummer",
+                "姓名": "Name",
+                "性别": "Geschlecht",
+                "国籍": "Nationalität",
+                "出生日期": "Geburtsdatum",
+                "中文姓名(请用中文填写)": "Chinesischer Name (bitte in chinesischer Schrift ausfüllen)",
+                "签证号码": "Visa-Nummer",
+                "免签": "Visumfrei",
+                "抵达航班/车次/船名": "Ankunftsflug-/Zug-/Schiffsname",
+                "入境事由": "Einreisegrund",
+                "本人电话号码": "Eigene Telefonnummer",
+                "在华经停和目的城市": "Zwischenstopps und Zielstädte in China",
+                "在华住址或旅馆名称": "Adresse oder Name des Hotels in China",
+                "市": "Stadt",
+                "确认打印": "Drucken bestätigen",
+                "清空重采": "Löschen und neu erfassen",
+                "姓": "Nachname",
+                "名": "Vorname",
+                "外交/公务": "Diplomatie/Amtspflicht",
+                "商务": "Geschäft",
+                "定居": "Siedlung",
+                "就业": "Beschäftigung",
+                "学习": "Studium",
+                "旅游": "Reisen",
+                "探亲": "Familienbesuch",
+                "过境": "Durchreise",
+                "其他": "Andere"
+            },
+            FRA: {
+                "证件号码": "Numéro de pièce d'identité",
+                "姓名": "Nom",
+                "性别": "Sexe",
+                "国籍": "Nationalité",
+                "出生日期": "Date de naissance",
+                "中文姓名(请用中文填写)": "Nom chinois (veuillez remplir en chinois)",
+                "签证号码": "Numéro de visa",
+                "免签": "Exemption de visa",
+                "抵达航班/车次/船名": "Nom du vol/train/bateau d'arrivée",
+                "入境事由": "Motif d'entrée",
+                "本人电话号码": "Votre numéro de téléphone",
+                "在华经停和目的城市": "Villes d'escale et de destination en Chine",
+                "在华住址或旅馆名称": "Adresse ou nom de l'hôtel en Chine",
+                "市": "Ville",
+                "确认打印": "Confirmer l'impression",
+                "清空重采": "Effacer et reprendre la saisie",
+                "姓": "Nom de famille",
+                "名": "Prénom",
+                "外交/公务": "Diplomatie/Fonction publique",
+                "商务": "Affaires",
+                "定居": "Résidence",
+                "就业": "Emploi",
+                "学习": "Études",
+                "旅游": "Tourisme",
+                "探亲": "Visite de famille",
+                "过境": "Transit",
+                "其他": "Autres"
+            },
+            RUS: {
+                "证件号码": "Номер документа",
+                "姓名": "Фамилия и имя",
+                "性别": "Пол",
+                "国籍": "Гражданство",
+                "出生日期": "Дата рождения",
+                "中文姓名(请用中文填写)": "Китайское имя (заполните на китайском языке)",
+                "签证号码": "Номер визы",
+                "免签": "Безвизовый режим",
+                "抵达航班/车次/船名": "Название прилетающего рейса/поезда/корабля",
+                "入境事由": "Цель въезда",
+                "本人电话号码": "Ваш номер телефона",
+                "在华经停和目的城市": "Города остановок и цель поездки в Китае",
+                "在华住址或旅馆名称": "Адрес проживания или название отеля в Китае",
+                "市": "Город",
+                "确认打印": "Подтвердить печать",
+                "清空重采": "Очистить и повторно ввести",
+                "姓": "Фамилия",
+                "名": "Имя",
+                "外交/公务": "Дипломатические/Служебные",
+                "商务": "Деловые",
+                "定居": "Постоянное проживание",
+                "就业": "Работа",
+                "学习": "Учеба",
+                "旅游": "Туризм",
+                "探亲": "Посещение родственников",
+                "过境": "Транзит",
+                "其他": "Другие"
+            },
+            ITA: {
+                "证件号码": "Numero documento",
+                "姓名": "Nome",
+                "性别": "Sesso",
+                "国籍": "Nazionalità",
+                "出生日期": "Data di nascita",
+                "中文姓名(请用中文填写)": "Nome cinese (compila in cinese)",
+                "签证号码": "Numero visto",
+                "免签": "Esenzione visto",
+                "抵达航班/车次/船名": "Nome del volo/treno/naviglio di arrivo",
+                "入境事由": "Motivo di ingresso",
+                "本人电话号码": "Il tuo numero di telefono",
+                "在华经停和目的城市": "Città di scalo e destinazione in Cina",
+                "在华住址或旅馆名称": "Indirizzo o nome dell'hotel in Cina",
+                "市": "Città",
+                "确认打印": "Conferma stampa",
+                "清空重采": "Cancella e reinserisci",
+                "姓": "Cognome",
+                "名": "Nome",
+                "外交/公务": "Diplomazia/Servizio pubblico",
+                "商务": "Affari",
+                "定居": "Settimantosi",
+                "就业": "Lavoro",
+                "学习": "Studi",
+                "旅游": "Turismo",
+                "探亲": "Visita ai parenti",
+                "过境": "Transito",
+                "其他": "Altri"
+            }
+        };
+
+        function showUserInfo(userInfo) {
+            document.getElementById('placeholder-image').style.display = 'none';
+            document.getElementById('user-info').style.display = 'block';
+            document.getElementById('documentNO').value = userInfo.documentNO;
+            document.getElementById('surname').value = userInfo.surname;
+            document.getElementById('givenname').value = userInfo.givenname;
+            document.getElementById('sex').value = userInfo.sex;
+            document.getElementById('nationality').value = userInfo.nationality;
+            document.getElementById('dateOfBirth').value = userInfo.dateOfBirth;
+
+            // 根据国籍进行翻译
+            const nationality = userInfo.nationality;
+            if (translations[nationality]) {
+                const translation = translations[nationality];
+                const thElements = document.querySelectorAll('th');
+                thElements.forEach(th => {
+                    const originalText = th.textContent.split('|')[0].trim();
+                    if (translation[originalText]) {
+                        th.textContent = `${originalText} | ${translation[originalText]}`;
+                    }
+                });
+
+                const buttonElements = document.querySelectorAll('button');
+                buttonElements.forEach(button => {
+                    const originalText = button.textContent.split('|')[0].trim();
+                    if (translation[originalText]) {
+                        button.textContent = `${originalText} | ${translation[originalText]}`;
+                    }
+                });
+
+
+                const selectElements = document.querySelectorAll('option');
+                selectElements.forEach(option => {
+                    const originalText = option.textContent.split('|')[0].trim();
+                    if (translation[originalText]) {
+                        option.textContent = `${originalText} | ${translation[originalText]}`;
+                    }
+                });
+
+            } else {
+                const translation = translations["OOO"];
+                const thElements = document.querySelectorAll('th');
+                thElements.forEach(th => {
+                    const originalText = th.textContent.split('|')[0].trim();
+                    if (translation[originalText]) {
+                        th.textContent = `${originalText} | ${translation[originalText]}`;
+                    }
+                });
+
+
+
+                const buttonElements = document.querySelectorAll('button');
+                buttonElements.forEach(button => {
+                    const originalText = button.textContent.split('|')[0].trim();
+                    if (translation[originalText]) {
+                        button.textContent = `${originalText} | ${translation[originalText]}`;
+                    }
+                });
+
+                const selectElements = document.querySelectorAll('option');
+                console.log("国籍" + nationality)
+                selectElements.forEach(option => {
+                    const originalText = option.textContent.split('|')[0].trim();
+                    if (translation[originalText]) {
+                        option.textContent = `${originalText} | ${translation[originalText]}`;
+                    }
+                });
+            }
+        }
+
+        function confirmPrint() {
+            const documentNO = document.getElementById('documentNO').value;
+            const surname = document.getElementById('surname').value;
+            const givenname = document.getElementById('givenname').value;
+            const nationality = document.getElementById('nationality').value;
+            const sex = document.getElementById('sex').value.includes('男') ? 'M' : 'F';
+            const dateOfBirth = document.getElementById('dateOfBirth').value;
+            const chineseName = document.getElementById('chineseName').value;
+            // const visaNumber = document.getElementById('visaNumber').value;
+            const visaNumber = document.getElementById('visaFree').checked ? 'MQ' : document.getElementById('visaNumber').value;
+            const arrivalTransport = document.getElementById('arrivalTransport').value;
+            const entryPurpose = document.getElementById('entryPurpose').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const citiesInChina = document.getElementById('citiesInChina').value;
+            const addressInChina = document.getElementById('addressInChina').value;
+            const city = document.getElementById('city').value;
+
+            const data = {
+                documentNO,
+                surname,
+                givenname,
+                nationality,
+                sex,
+                dateOfBirth,
+                chineseName,
+                visaNumber,
+                arrivalTransport,
+                entryPurpose,
+                phoneNumber,
+                citiesInChina,
+                addressInChina,
+                city
+            };
+            console.log("user data:" + JSON.stringify(data))
+            fetch('/print', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(result => {
+                    clearAndReacquire();
+                    // 创建弹窗元素
+                    const popup = document.createElement('div');
+                    popup.style.position = 'fixed';
+                    popup.style.top = '50%';
+                    popup.style.left = '50%';
+                    popup.style.transform = 'translate(-50%, -50%)';
+                    // 增大内边距，让内容与边框有更大的距离
+                    popup.style.padding = '40px';
+                    // 设置一个固定的宽度，让弹窗更宽
+                    popup.style.width = '400px';
+                    // 设置背景颜色
+                    popup.style.backgroundColor = '#fff';
+                    // 设置边框样式
+                    popup.style.border = '1px solid #ccc';
+                    // 设置阴影效果
+                    popup.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+                    // 设置 z-index 确保弹窗显示在最上层
+                    popup.style.zIndex = '1000';
+                    // 增大字体大小，让文字更清晰
+                    popup.style.fontSize = '20px';
+                    // 让文字居中显示
+                    popup.style.textAlign = 'center';
+                    // 设置弹窗的文本内容
+                    popup.textContent = result.message;
+                    // 将弹窗添加到页面
+                    document.body.appendChild(popup);
+
+                    // 三秒后移除弹窗
+                    setTimeout(() => {
+                        document.body.removeChild(popup);
+                    }, 5000);
+
+                })
+                .catch(error => {
+                    alert('打印出错，请重试。');
+                });
+        }
+
+        function clearAndReacquire() {
+            document.getElementById('USER').reset();
+            document.getElementById('user-info').style.display = 'none';
+            // 显示图片
+            document.getElementById('placeholder-image').style.display = 'block';
+            document.getElementById('tip').style.display = 'block';
+            // 可以在这里添加重新提示扫描的逻辑
+            fetch('/clear', {
+                method: 'GET',
+                headers: {
+                    // 这里如果 GET 请求没有特别的请求头需求，可以省略
+                    // 'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(result => {
+                    // alert(result.message);
+                })
+                .catch(error => {
+                    alert('清除数据出错，请重试。');
+                });
+            console.log('用户数据清空成功')
+        }
+
+        function simulateReceiveData() {
+            console.log('监听后端中。。。');
+
+            fetch('/get_received_data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.data) {
+                        console.log(`接收到的数据: ${JSON.stringify(data.data)}`);
+                        document.getElementById('tip').style.display = 'none';
+                        showUserInfo(data.data);
+                    }
+                })
+                .catch(error => {
+                    logMessage(`请求出错: ${error}`);
+                });
+        }
+
+        // 定时接收数据
+        setInterval(simulateReceiveData, 3000);
+    </script>
+</head>
+
+<body>
+    <img id="logo" src="/images/ymj.png" alt="Logo">
+    <div class="translation-tip">AI翻译，仅供参考</div>
+    <h1 style="font-size: 50px;">外国人入境卡自助打印 <br>
+        <span style="font-size: 35px;">Self-service Printing of Foreigner
+            Arrival Cards</span>
+    </h1>
+    <img id="placeholder-image" src="/images/document.jpg" alt="Placeholder Image">
+    <p id="tip">请正确放置证件并扫描<br>
+        <span style="font-size: 25px;"> Please place the document correctly and
+            scan it.</span>
+    </p>
+    <div id="user-info" style="display: none;">
+        <form id="USER">
+            <table>
+
+                <tr>
+                    <th colspan="2">姓 | SurnName</th>
+                    <td colspan="2"><input type="text" id="surname"></td>
+                    <th colspan="2">性别 | Gender</th>
+                    <td colspan="2"><input type="text" id="sex"></td>
+                </tr>
+                <tr>
+                    <th colspan="2">名 | GivenName</th>
+                    <td colspan="2"><input type="text" id="givenname"></td>
+                    <th colspan="2">国籍 | Nationality</th>
+                    <td colspan="2"><input type="text" id="nationality"></td>
+
+
+                </tr>
+                <tr>
+                    <th colspan="2">出生日期 | Date of Birth</th>
+                    <td colspan="2"><input type="text" id="dateOfBirth"></td>
+                    <th colspan="2">中文姓名(请用中文填写) | Chinese name (If there is one)</th>
+                    <td colspan="2"><input type="text" id="chineseName"></td>
+                </tr>
+                <tr>
+                    <th colspan="2">证件号码 | Document Number</th>
+                    <td colspan="2"><input type="text" id="documentNO"></td>
+                    <th>签证号码 | Visa No
+
+                    </th>
+                    <td>
+                        <input type="text" id="visaNumber">
+                    </td>
+                    <th>免签 | Visa - Free
+                    </th>
+                    <td>
+                        <input type="checkbox" id="visaFree">
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">抵达航班/车次/船名 | Arrival Flight No./ Train No./ Vessel Name</th>
+                    <td colspan="2"><input type="text" id="arrivalTransport"></td>
+                    <th colspan="2">入境事由
+                        | Purpose of this trip</th>
+                    <td colspan="2">
+                        <select name="purpose" id="entryPurpose">
+                            <option value="" disabled selected>点击选择 | Click to select</option>
+                            <option value="外交/公务">外交/公务 | Diplomacy Official</option>
+                            <option value="访问/商务">访问/商务 | Visit/Business</option>
+                            <option value="定居">定居 | Settlement</option>
+                            <option value="工作">工作 | Employment</option>
+                            <option value="学习">学习 | Study</option>
+                            <option value="旅游">旅游 | Tourism</option>
+                            <option value="探亲">探亲 | Visiting Relatives</option>
+                            <option value="过境">过境 | Transit</option>
+                            <option value="其他">其他 | Others</option>
+                        </select>
+                    </td>
+
+
+                </tr>
+                <tr>
+                    <th colspan="2">本人电话号码 | Personal phone No. </th>
+                    <td colspan="2"><input type="text" id="phoneNumber"></td>
+                    <th colspan="2">在华经停和目的城市 | Cities intended to visit in China
+                    </th>
+                    <td colspan="2"><input type="text" id="citiesInChina"></td>
+
+
+                </tr>
+                <tr>
+                    <th colspan="2">在华住址或旅馆名称 | Detailed address or hotel name while in China
+                    </th>
+                    <td colspan="2"><input type="text" id="addressInChina"></td>
+
+                    <th colspan="2">
+                        市 | City
+                    </th>
+                    <td colspan="2"><input type="text" id="city"></td>
+                </tr>
+
+            </table>
+        </form>
+        <button onclick="confirmPrint()">确认打印 | Confirm Print</button>
+        <button onclick="clearAndReacquire()" style="background: #4C9AAE">清空重采 | Clear and Reacquire</button>
+    </div>
+    <p style="font-size: 30px; color: #046cb1;">深圳机场出入境边防检查站</p>
+</body>
+
+</html>

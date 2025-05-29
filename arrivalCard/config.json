@@ -1,0 +1,20 @@
+{
+    "enableLastFiveRows": false,
+        "databases": [
+        {
+            "DB_USER": "qgtg",
+            "DB_PASSWORD": "q0354403cs1",
+            "DB_HOST": "6.0.64.168",
+            "DB_PORT": "1521",
+            "DB_SERVICE_NAME": "6.0.64.168"
+        },
+        {
+            "DB_USER": "your_second_user",
+            "DB_PASSWORD": "your_second_password",
+            "DB_HOST": "your_second_host",
+            "DB_PORT": "your_second_port",
+            "DB_SERVICE_NAME": "your_second_service_name"
+        }
+    ]
+
+}

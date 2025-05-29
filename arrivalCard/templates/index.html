@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>外国人入境卡自助打印</title>
+    <!-- <link rel="stylesheet" href="/style.css"> -->
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/keyboard.css">
+    <script src="/static/script.js"></script>
+    <script src="/static/keyboard.js"></script>
+</head>
+
+<body>
+    <img id="logo" src="/images/ymj.png" alt="Logo">
+    <div class="translation-tip">AI翻译，仅供参考</div>
+    <h1 style="font-size: 50px;">外国人入境卡自助打印 <br>
+        <span style="font-size: 35px;">Self-service Printing of Foreigner
+            Arrival Cards</span>
+    </h1>
+    <img id="placeholder-image" src="/images/document.jpg" alt="Placeholder Image">
+    <p id="tip">请正确放置证件并扫描<br>
+        <span style="font-size: 25px;"> Please place the document correctly and
+            scan it.</span>
+    </p>
+    <div id="user-info" style="display: none;">
+        <!-- 新增表格容器 -->
+        <div id="table-container">
+            <form id="USER">
+                <table>
+                    <tr>
+                        <th colspan="2">姓 | SurnName</th>
+                        <td colspan="2"><input type="text" id="surname" lang="en" inputmode="text" class="keyboard-input"
+                                style="color: rgb(26, 103, 236)"></td>
+                        <th colspan="2">性别 | Gender</th>
+                        <td colspan="2"><input type="text" id="sex" lang="en" inputmode="text" class="keyboard-input"
+                                style="color: rgb(26, 103, 236)"></td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">名 | GivenName</th>
+                        <td colspan="2"><input type="text" id="givenname" lang="en" inputmode="text" class="keyboard-input"
+                                style="color: rgb(26, 103, 236)"></td>
+                        <th colspan="2">国籍 | Nationality</th>
+                        <td colspan="2"><input type="text" id="nationality" lang="en" inputmode="text" class="keyboard-input"
+                                style="color: rgb(26, 103, 236)"></td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">出生日期 | Date of Birth</th>
+                        <td colspan="2"><input type="text" id="dateOfBirth" lang="en" inputmode="text" class="keyboard-input"
+                                style="color: rgb(26, 103, 236)"></td>
+                        <th colspan="2">中文姓名(请用中文填写) | Chinese name (If there is one)</th>
+                        <td colspan="2"><input type="text" id="chineseName" class="keyboard-input"></td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">证件号码 | Document Number</th>
+                        <td colspan="2"><input type="text" id="documentNO" lang="en" inputmode="text" class="keyboard-input"
+                                style="color: rgb(26, 103, 236)"></td>
+                        <th>签证号码 | Visa No
+                        </th>
+                        <td>
+                            <input type="text" id="visaNumber" lang="en" inputmode="text" class="keyboard-input">
+                        </td>
+                        <th>免签 | Visa - Free
+                        </th>
+                        <td>
+                            <input type="checkbox" id="visaFree">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">抵达航班/车次/船名 | Arrival Flight No./ Train No./ Vessel Name</th>
+                        <td colspan="2"><input type="text" id="arrivalTransport" lang="en" inputmode="text" class="keyboard-input"></td>
+                        <th colspan="2">入境事由
+                            | Purpose of this trip</th>
+                        <td colspan="2">
+                            <select name="purpose" id="entryPurpose">
+                                <option value="" disabled selected>点击选择 | Click to select</option>
+                                <option value="外交/公务">外交/公务 | Diplomacy Official</option>
+                                <option value="访问/商务">商务 | Business</option>
+                                <option value="定居">定居 | Settlement</option>
+                                <option value="工作">工作 | Employment</option>
+                                <option value="学习">学习 | Study</option>
+                                <option value="旅游">旅游 | Tourism</option>
+                                <option value="探亲">探亲 | Visiting Relatives</option>
+                                <option value="过境">过境 | Transit</option>
+                                <option value="其他">其他 | Others</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">本人电话号码 | Personal phone No. </th>
+                        <td colspan="2"><input type="text" id="phoneNumber" lang="en" inputmode="text" class="keyboard-input"></td>
+                        <th colspan="2">在华经停和目的城市 | Cities intended to visit in China
+                        </th>
+                        <td colspan="2"><input type="text" id="citiesInChina" lang="en" inputmode="text" class="keyboard-input"></td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">在华住址或旅馆名称 | Detailed address or hotel name while in China
+                        </th>
+                        <td colspan="2"><input type="text" id="addressInChina" lang="en" inputmode="text" class="keyboard-input"></td>
+                        <th colspan="2">
+                            市 | City
+                        </th>
+                        <td colspan="2"><input type="text" id="city" lang="en" inputmode="text" class="keyboard-input"></td>
+                    </tr>
+                    <!-- 第二行内容 -->
+                    <tr>
+                        <th colspan="4">您是否定妥出境行程？如是，请填写具体安排。 | Have you booked the ticket for your departure? If yes,
+                            please write down your departure information.</th>
+                        <td colspan="4">
+                            <div class="radio-container">
+                                <label class="inline-radio">
+                                    <input type="radio" name="departureBooked" value="yes" class="last-five-rows"> 是 | Yes
+                                </label>
+                                <label class="inline-radio">
+                                    <input type="radio" name="departureBooked" value="no" class="last-five-rows"> 否 | No
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">出境时间 | Date of departure</th>
+                        <td colspan="2"><input type="text" id="dateOfDeparture" lang="en" inputmode="text" class="keyboard-input last-five-rows"></td>
+                        <th colspan="2">出境航班/车次/船名 | Departure Flight No./Train No./Vessel Name</th>
+                        <td colspan="2"><input type="text" id="departureTransport" class="keyboard-input last-five-rows"></td>
+                    </tr>
+
+                    <tr>
+                        <th colspan="4">您是否有接待单位或联系人？如是，请填写具体安排。| Do you have any reception unit or contacts in China?
+                            If yes, please write down the contact information.</th>
+                        <td colspan="4">
+                            <div class="radio-container">
+                                <label class="inline-radio">
+                                    <input type="radio" name="hasContacts" value="yes" class="last-five-rows"> 是 | Yes
+                                </label>
+                                <label class="inline-radio">
+                                    <input type="radio" name="hasContacts" value="no" class="last-five-rows"> 否 | No
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">名称 | Name</th>
+                        <td colspan="2"><input type="text" id="receptionName" lang="en" inputmode="text" class="keyboard-input last-five-rows"></td>
+                        <th colspan="2">地址及联系电话 | Address and Contact No.</th>
+                        <td colspan="2"><input type="text" id="receptionAddress" class="keyboard-input last-five-rows"></td>
+                    </tr>
+                    <tr>
+                        <th colspan="4">您在过去两年曾去过哪些国家 (地区)？ | Which countries and regions have you ever been to in the
+                            past two years?</th>
+                        <td colspan="4"><input type="text" id="pastCountries" lang="en" inputmode="text" class="keyboard-input last-five-rows"></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <button onclick="confirmPrint()">确认打印 | Confirm Print</button>
+        <button onclick="clearAndReacquire()" style="background: #4C9AAE">清空重采 | Clear and Reacquire</button>
+    </div>
+    <!-- 优化后的键盘布局 -->
+    <div id="draggableDiv" class="virtual-keyboard">
+        <div class="keyboard-header">
+            <span class="keyboard-title">虚拟键盘</span>
+            <button class="close-keyboard">&times;</button>
+        </div>
+        <div class="keyboard-rows">
+            <!-- 键盘行将通过JS动态生成 -->
+        </div>
+    </div>
+    <p style="font-size: 30px; color: #046cb1;">深圳机场出入境边防检查站</p>
+</body>
+
+</html>

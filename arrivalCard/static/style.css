@@ -1,0 +1,150 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    text-align: center;
+    padding: 20px;
+    /* 使用 flexbox 布局 */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+
+h1 {
+    color: #00008b;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+p {
+    font-size: 30px;
+}
+
+table {
+    margin: 20px auto;
+    border-collapse: collapse;
+}
+
+th {
+    padding: 10px 15px;
+    border: 0.5px solid #ccc;
+    width: 100px;
+}
+
+td {
+    padding: 10px 15px;
+    border: 0.5px solid #ccc;
+    width: 100px;
+}
+
+input {
+    width: 100%;
+    height: 35px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    text-align: center;
+    font-size: 18px;
+}
+
+/* 下拉列表的字体大小 */
+select {
+    font-size: 18px;
+}
+
+/* 为第三行添加特殊样式 */
+table tr:nth-child(3) th {
+    width: 250px;
+    /* 自定义宽度 */
+    /* background-color: lightblue; */
+}
+
+table tr:nth-child(3) td {
+    width: 250px;
+    /* 自定义宽度 */
+    /* background-color: lightyellow;  */
+}
+
+button {
+    font-size: 20px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin: 10px;
+    border-radius: 8px;
+}
+
+/* 最后一个 p 元素样式 */
+body>p:last-of-type {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    font-size: 16px;
+    margin-top: auto;
+    background-color: #f0f0f0;
+    padding: 10px 0;
+}
+
+/* 新增提示语样式 */
+.translation-tip {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(to right, #4CAF50, #8BC34A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+    font-size: 25px;
+}
+
+table tr:nth-last-child(-n+5) th,
+table tr:nth-last-child(-n+5) td {
+    background-color: rgb(215, 229, 249);
+}
+
+
+
+#placeholder-image {
+    width: 50%;
+    height: auto;
+    /* background-color: white; */
+    margin: 0 auto;
+}
+
+/* 添加 logo 样式 */
+#logo {
+    position: absolute;
+    top: 20px;
+    left: 50px;
+    width: 120px;
+    /* 可根据需要调整 logo 宽度 */
+    height: auto;
+}
+/* 新增单选按钮容器样式 */
+.radio-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 新增内联单选按钮标签样式 */
+.inline-radio {
+    display: flex;
+    align-items: center;
+    margin: 0 15px;
+}
+
+/* 调整单选按钮样式 */
+.inline-radio input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+/* 设置表格容器样式，添加滚动条 */
+#table-container {
+    max-height: 600px; /* 可根据需要调整最大高度 */
+    overflow-y: auto;
+}
+
