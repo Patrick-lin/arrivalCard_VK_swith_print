@@ -12,6 +12,7 @@ import win32ui
 import MRZ
 import cx_Oracle
 import os  # 导入 os 模块
+import datetime
 
 # 将路径替换为你实际解压的目录
 os.environ['PATH'] = r'D:\instantclient_19_10;' + os.environ['PATH']
@@ -28,6 +29,8 @@ try:
     with open('config.json', 'r', encoding='utf-8') as f:
         config = json.load(f)
         databases = config.get('databases', [])
+        PortCode = config.get('PortCode')
+        MachineCode = config.get('MachineCode')
 except (FileNotFoundError, json.JSONDecodeError):
     logging.error("无法读取 config.json 文件")
     databases = []
@@ -131,8 +134,8 @@ def print_file(content, index_array, next_page_content, next_page_index):
             string = string_array[i]
             # 性别分支
             if i == 4:
-                if string == "2":
-                    ind[0] = 13
+                if string != "M":
+                    ind[0] = 16
                     ind[1] = 9
                 string = "√"
             # 签证分支
@@ -146,28 +149,37 @@ def print_file(content, index_array, next_page_content, next_page_index):
                     if string == "访问/商务" :
                         ind[0] = 46+4+5
                         ind[1] = 26+2
+                        string = "√"
                     elif string == "旅游":
                         ind[0] = 54+4+5
                         ind[1] = 8+2
+                        string = "√"
                     elif string == "探亲":
                         ind[0] = 62+4+5
                         ind[1] = 46+2
+                        string = "√"
                     elif string == "工作":
                         ind[0] = 54+4+5
                         ind[1] = 46+2
+                        string = "√"
                     elif string == "学习":
                         ind[0] = 54+4+5
                         ind[1] = 26+2
+                        string = "√"
                     elif string == "定居":
                         ind[0] = 46+4+5
                         ind[1] = 8+2
+                        string = "√"
                     elif string == "其他":
                         ind[0] = 62+2+5
                         ind[1] = 8+2
+                        string = "√"
                     elif string == "外交/公务":
                         ind[0] = 46+4+5
                         ind[1] = 46+2
-                    string = "√"
+                        string = "√"
+                    else:
+                        string = ""
             paper_width_pixels = int((ind[0] - 4) / 25.4 * 600)
             paper_height_pixels = int((ind[1] - 4) / 25.4 * 600)
 
@@ -328,7 +340,7 @@ def print_info():
 
     insertDatabase(data)
 
-    return jsonify({"message": "打印成功"})
+    return jsonify({"message": "打印成功/Print successful"})
 
 
 def insertDatabase(data):
@@ -363,15 +375,19 @@ def insertDatabase(data):
             if not rjsydm:
                 # 若未找到映射，可记录日志或使用默认值（需根据业务需求调整）
                 logging.warning(f"未找到入境事由 '{entry_purpose}' 对应的 RJSYDM 映射")
-            # 获取当前最大的 YWBH 值
-            cursor.execute("SELECT MAX(YWBH) FROM QGTG.BJ_YW_T_WGRRJSBXX WHERE YWBH LIKE 'JC%'")
 
-            max_ywbh = cursor.fetchone()[0]
-            if max_ywbh is None:
-                seq = 0
-            else:
-                seq = int(max_ywbh[2:]) + 1
-            ywbh = f"JC{str(seq).zfill(6)}"
+            # 获取当天日期
+            today = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            # 获取当前日期下最大的 YWBH 后 7 位值
+            # cursor.execute("SELECT MAX(SUBSTR(YWBH, -7)) FROM QGTG.BJ_YW_T_WGRRJSBXX WHERE YWBH LIKE 'Z06%s%%'" % today)
+            # max_ywbh = cursor.fetchone()[0]
+            # if max_ywbh is None:
+            #     seq = 0
+            # else:
+            #     seq = int(max_ywbh) + 1
+
+            # 生成新的 YWBH
+            ywbh = f"{PortCode}{MachineCode}{today}"
 
             logging.info("ywbh is " + ywbh)
             insert_query = """
@@ -421,6 +437,96 @@ def insertDatabase(data):
             logging.info(f"数据已成功插入到 {db_config['DB_SERVICE_NAME']} 数据库")
         except Exception as e:
             logging.error(f"插入数据到 {db_config['DB_SERVICE_NAME']} 数据库时出错: {e}")
+# def insertDatabase(data):
+#     # 插入数据到Oracle数据库
+#     for db_config in databases:
+#         try:
+#             os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
+#             dsn = cx_Oracle.makedsn(db_config['DB_HOST'], db_config['DB_PORT'], service_name=db_config['DB_SERVICE_NAME'])
+#             connection = cx_Oracle.connect(user=db_config['DB_USER'], password=db_config['DB_PASSWORD'], dsn=dsn, encoding="UTF-8",
+#                                            nencoding="UTF-8")
+#             cursor = connection.cursor()
+#             # 新增映射字典
+#             rjsydm_mapping = {
+#                 # 明确映射项
+#                 "外交/公务": "2",
+#                 "访问/商务": "1",
+#                 "观光/休闲": "3",
+#                 "定居": "7",
+#                 "工作": "5",
+#                 "学习": "6",
+#                 "旅游": "L",
+#                 "探亲": "4",
+#                 "过境": "C",
+#                 "其他": "9"
+#             }
+#
+#             # 获取原始入境事由
+#             entry_purpose = data.get('entryPurpose', '')
+#
+#             # 执行映射
+#             rjsydm = rjsydm_mapping.get(entry_purpose, '')  # 未匹配时为空字符串
+#             if not rjsydm:
+#                 # 若未找到映射，可记录日志或使用默认值（需根据业务需求调整）
+#                 logging.warning(f"未找到入境事由 '{entry_purpose}' 对应的 RJSYDM 映射")
+#             # 获取当前最大的 YWBH 值
+#             cursor.execute("SELECT MAX(YWBH) FROM QGTG.BJ_YW_T_WGRRJSBXX WHERE YWBH LIKE 'JC%'")
+#
+#             max_ywbh = cursor.fetchone()[0]
+#             if max_ywbh is None:
+#                 seq = 0
+#             else:
+#                 seq = int(max_ywbh[2:]) + 1
+#             ywbh = f"JC{str(seq).zfill(6)}"
+#
+#             logging.info("ywbh is " + ywbh)
+#             insert_query = """
+#             INSERT INTO QGTG.BJ_YW_T_WGRRJSBXX (YWBH, YWX, YWM, XBDM, GJDQDM, CSRQ, ZWXM, ZJHM, QZHM, QZZLDM, RJJTBC, RJSYDM, JNDH, MDCSMC, ZHXXZZ, ZHZZXZQH, JHCJRQ, JHCJJTBC, ZFYQDW, ZFYQLXDH, CQWGJDQDM, RKSJ)
+#             VALUES (:ywbh, :surname, :givenname, :sex, :nationality, :dateOfBirth, utl_raw.cast_to_varchar2(:chineseName), :documentNO, :visaNumber, :visaFree, :arrivalTransport, :entryPurpose, :phoneNumber, utl_raw.cast_to_varchar2(:citiesInChina), utl_raw.cast_to_varchar2(:addressInChina), utl_raw.cast_to_varchar2(:city),  :Dateofdeparture, :DepartureFlightNo, utl_raw.cast_to_varchar2(:NameofChineseinvitingunit), utl_raw.cast_to_varchar2(:AddressoftheChinese), utl_raw.cast_to_varchar2(:countries),
+#             TO_CHAR(SYSDATE, 'yyyymmddhh24miss') )
+#             """
+#
+#             visa_free = '1' if data.get('visaFree') else '0'
+#
+#             # 检查值是否为 None，如果是则转换为空字符串
+#             chineseName = data.get('chineseName') if data.get('chineseName') else ''
+#             citiesInChina = data.get('citiesInChina') if data.get('citiesInChina') else ''
+#             addressInChina = data.get('addressInChina') if data.get('addressInChina') else ''
+#             city = data.get('city') if data.get('city') else ''
+#             receptionName = data.get('nextPageContent')[4] if data.get('nextPageContent')[4] else ''
+#             receptionAddress = data.get('nextPageContent')[5] if data.get('nextPageContent')[5] else ''
+#             pastCountries = data.get('nextPageContent')[6] if data.get('nextPageContent')[6] else ''
+#
+#             cursor.execute(insert_query, {
+#                 'ywbh': ywbh,
+#                 'surname': data.get('surname'),
+#                 'givenname': data.get('givenname'),
+#                 'sex': 1 if data.get('sex') == "M" else 2,
+#                 'nationality': data.get('nationality'),
+#                 'dateOfBirth': data.get('dateOfBirth'),
+#                 'chineseName': chineseName.encode('GBK'),
+#                 'documentNO': data.get('documentNO'),
+#                 'visaNumber': data.get('visaNumber'),
+#                 'visaFree': visa_free,
+#                 'arrivalTransport': data.get('arrivalTransport'),
+#                 'entryPurpose': rjsydm,
+#                 'phoneNumber': data.get('phoneNumber'),
+#                 'citiesInChina': citiesInChina.encode('GBK'),
+#                 'addressInChina': addressInChina.encode('GBK'),
+#                 'city': city.encode('GBK'),
+#                 # 第二页内容入库
+#                 'Dateofdeparture': data.get('nextPageContent')[1],
+#                 'DepartureFlightNo': data.get('nextPageContent')[2],
+#                 'NameofChineseinvitingunit': receptionName.encode('GBK'),
+#                 'AddressoftheChinese': receptionAddress.encode('GBK'),
+#                 'countries': pastCountries.encode('GBK'),
+#             })
+#             connection.commit()
+#             cursor.close()
+#             connection.close()
+#             logging.info(f"数据已成功插入到 {db_config['DB_SERVICE_NAME']} 数据库")
+#         except Exception as e:
+#             logging.error(f"插入数据到 {db_config['DB_SERVICE_NAME']} 数据库时出错: {e}")
 
 
 @app.route('/parse', methods=['POST'])

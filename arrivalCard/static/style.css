@@ -2,11 +2,11 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
     text-align: center;
-    padding: 20px;
+    padding: 5px;
     /* 使用 flexbox 布局 */
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    /*min-height: 100vh;*/
     margin: 0;
 }
 
@@ -26,13 +26,13 @@ table {
 }
 
 th {
-    padding: 10px 15px;
+    padding: 4px 15px;
     border: 0.5px solid #ccc;
     width: 100px;
 }
 
 td {
-    padding: 10px 15px;
+    padding: 4px 15px;
     border: 0.5px solid #ccc;
     width: 100px;
 }
@@ -66,7 +66,7 @@ table tr:nth-child(3) td {
 
 button {
     font-size: 20px;
-    padding: 10px 20px;
+    padding: 5px 20px;
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -83,7 +83,7 @@ body>p:last-of-type {
     font-size: 16px;
     margin-top: auto;
     background-color: #f0f0f0;
-    padding: 10px 0;
+    padding: 5px 0;
 }
 
 /* 新增提示语样式 */
@@ -110,6 +110,7 @@ table tr:nth-last-child(-n+5) td {
     height: auto;
     /* background-color: white; */
     margin: 0 auto;
+    display: block;
 }
 
 /* 添加 logo 样式 */

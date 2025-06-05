@@ -4,7 +4,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
-    background-color: #f5f5f5;
+    /*background-color: #f5f5f5;*/
 }
 
 .container {
@@ -81,13 +81,27 @@ textarea.keyboard-input {
     font-size: 18px;
 }
 
-.close-keyboard {
+/* .close-keyboard {
     background: none;
     border: none;
     font-size: 24px;
     cursor: pointer;
     padding: 0px;
     color: #666;
+} */
+
+.close-keyboard {
+    background: #2361e6; /* 红色背景 */
+    border: none;
+    font-size: 16px; /* 增大字体大小 */
+    cursor: pointer;
+    padding: 8px 16px; /* 增加内边距 */
+    color: white; /* 白色文字 */
+    border-radius: 4px; /* 圆角边框 */
+}
+
+.close-keyboard:hover {
+    background: #0903a1; /* 鼠标悬停时颜色变深 */
 }
 
 .keyboard-rows {

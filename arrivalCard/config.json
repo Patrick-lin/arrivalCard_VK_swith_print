@@ -1,5 +1,7 @@
 {
-    "enableLastFiveRows": false,
+    "enableLastFiveRows": true,
+    "PortCode": "Z06",
+    "MachineCode": "A",
         "databases": [
         {
             "DB_USER": "qgtg",

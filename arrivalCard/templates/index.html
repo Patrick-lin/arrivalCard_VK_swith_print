@@ -64,7 +64,7 @@
                         <th>免签 | Visa - Free
                         </th>
                         <td>
-                            <input type="checkbox" id="visaFree">
+                            <input type="checkbox" id="visaFree" onchange="toggleVisaNumberInput()">
                         </td>
                     </tr>
                     <tr>
@@ -110,10 +110,10 @@
                         <td colspan="4">
                             <div class="radio-container">
                                 <label class="inline-radio">
-                                    <input type="radio" name="departureBooked" value="yes" class="last-five-rows"> 是 | Yes
+                                    <input type="radio" name="departureBooked" value="yes" class="last-five-rows" onchange="toggleDepartureInfo()"> 是 | Yes
                                 </label>
                                 <label class="inline-radio">
-                                    <input type="radio" name="departureBooked" value="no" class="last-five-rows"> 否 | No
+                                    <input type="radio" name="departureBooked" value="no" class="last-five-rows"  onchange="toggleDepartureInfo()"> 否 | No
                                 </label>
                             </div>
                         </td>
@@ -131,10 +131,10 @@
                         <td colspan="4">
                             <div class="radio-container">
                                 <label class="inline-radio">
-                                    <input type="radio" name="hasContacts" value="yes" class="last-five-rows"> 是 | Yes
+                                    <input type="radio" name="hasContacts" value="yes" class="last-five-rows" onchange="toggleReceptionInfo()"> 是 | Yes
                                 </label>
                                 <label class="inline-radio">
-                                    <input type="radio" name="hasContacts" value="no" class="last-five-rows"> 否 | No
+                                    <input type="radio" name="hasContacts" value="no" class="last-five-rows" onchange="toggleReceptionInfo()"> 否 | No
                                 </label>
                             </div>
                         </td>
@@ -160,7 +160,7 @@
     <div id="draggableDiv" class="virtual-keyboard">
         <div class="keyboard-header">
             <span class="keyboard-title">虚拟键盘</span>
-            <button class="close-keyboard">&times;</button>
+            <button class="close-keyboard">关闭/close</button>
         </div>
         <div class="keyboard-rows">
             <!-- 键盘行将通过JS动态生成 -->

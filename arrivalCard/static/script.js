@@ -799,3 +799,28 @@ document.addEventListener('DOMContentLoaded', function () {
 function logMessage(message) {
     console.log(message);
 }
+
+//签证按钮单选事件
+function toggleVisaNumberInput() {
+    const visaFreeCheckbox = document.getElementById('visaFree');
+    const visaNumberInput = document.getElementById('visaNumber');
+    visaNumberInput.disabled = visaFreeCheckbox.checked;
+}
+
+function toggleDepartureInfo() {
+    const departureBookedYes = document.querySelector('input[name="departureBooked"][value="yes"]');
+    const dateOfDeparture = document.getElementById('dateOfDeparture');
+    const departureTransport = document.getElementById('departureTransport');
+
+    dateOfDeparture.disabled = !departureBookedYes.checked;
+    departureTransport.disabled = !departureBookedYes.checked;
+}
+
+function toggleReceptionInfo() {
+    const hasContactsYes = document.querySelector('input[name="hasContacts"][value="yes"]');
+    const receptionName = document.getElementById('receptionName');
+    const receptionAddress = document.getElementById('receptionAddress');
+
+    receptionName.disabled = !hasContactsYes.checked;
+    receptionAddress.disabled = !hasContactsYes.checked;
+}
